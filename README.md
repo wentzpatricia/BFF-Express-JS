@@ -10,6 +10,9 @@ Esse projeto foi desenvolvido utilizando Javascript, NodeJS, Express, Axios e Je
 2. POST
    ![Desenho do fluxo post](./src/images/post.png)
 
+3. PUT
+   ![Desenho do fluxo put](./src/images/put.png)
+
 ## 🛠️ Preparando o ambiente:
 
 1. 🔮 Primeiro instale as dependencias do projeto:
