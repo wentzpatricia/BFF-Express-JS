@@ -7,6 +7,9 @@ Esse projeto foi desenvolvido utilizando Javascript, NodeJS, Express, Axios e Je
 1. GET
    ![Desenho do fluxo get](./src/images/get.png)
 
+2. POST
+   ![Desenho do fluxo post](./src/images/post.png)
+
 ## 🛠️ Preparando o ambiente:
 
 1. 🔮 Primeiro instale as dependencias do projeto:
