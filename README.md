@@ -23,3 +23,9 @@ npm install
 ```bash
 npm start
 ```
+
+3. 🧪 Rode os testes unitários:
+
+```bash
+npm test
+```
