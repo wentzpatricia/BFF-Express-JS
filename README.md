@@ -13,6 +13,9 @@ Esse projeto foi desenvolvido utilizando Javascript, NodeJS, Express, Axios e Je
 3. PUT
    ![Desenho do fluxo put](./src/images/put.png)
 
+4. DELETE
+   ![Desenho do fluxo delete](./src/images/delete.png)
+
 ## 🛠️ Preparando o ambiente:
 
 1. 🔮 Primeiro instale as dependencias do projeto:
