@@ -4,22 +4,47 @@ const { postService } = require("../post-service");
 jest.mock("../../use-cases/post-use-case");
 
 describe("postService", () => {
-  it("deve retornar os dados quando o useCase for bem-sucedido", async () => {
-    const mockData = { title: "foo", body: "bar", userId: 1 };
-    useCase.postUseCase.mockResolvedValue(mockData);
-
-    const result = await postService(mockData);
-
-    expect(result).toEqual(mockData);
-    expect(useCase.postUseCase).toHaveBeenCalled();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("deve lançar um erro quando o useCase falhar", async () => {
-    const mockData = { title: "foo", body: "bar", userId: 1 };
+  test("Deve retornar sucesso quando os dados são válidos", async () => {
+    const postData = { title: "foo", body: "bar", userId: 1 };
+    const mockResult = { id: 1, ...postData };
 
-    useCase.postUseCase.mockRejectedValue(new Error("Erro no useCase"));
+    useCase.postUseCase.mockResolvedValue(mockResult);
 
-    await expect(postService(mockData)).rejects.toThrow("Erro no useCase");
-    expect(useCase.postUseCase).toHaveBeenCalled();
+    const result = await postService(postData);
+
+    expect(result).toEqual(mockResult);
+    expect(useCase.postUseCase).toHaveBeenCalledWith(postData);
+  });
+
+  test("Deve lançar erro 422 quando faltam campos obrigatórios", async () => {
+    const invalidDataSets = [
+      { title: "foo", body: "bar" },
+      { body: "bar", userId: 1 },
+      { title: "foo", userId: 1 },
+    ];
+
+    for (const data of invalidDataSets) {
+      await expect(postService(data)).rejects.toEqual({
+        status: 422,
+        message: "Title, body e userId são obrigatórios",
+      });
+    }
+
+    expect(useCase.postUseCase).not.toHaveBeenCalled();
+  });
+
+  test("Deve lançar erro quando não for status 422", async () => {
+    const postData = { title: "foo", body: "bar", userId: 1 };
+    const mockError = new Error("Erro ao realizar Post");
+
+    useCase.postUseCase.mockRejectedValue(mockError);
+
+    await expect(postService(postData)).rejects.toThrow(
+      "Erro ao realizar Post"
+    );
   });
 });

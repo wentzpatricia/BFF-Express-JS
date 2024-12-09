@@ -8,7 +8,9 @@ postController.post("/create-posts", async (req, res) => {
     const data = await service.postService(postData);
     res.status(201).json({ message: "Post criado!", data });
   } catch (error) {
-    res.status(422).send("Erro ao criar post");
+    error.status
+      ? res.status(error.status).json({ message: error.message })
+      : res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
 

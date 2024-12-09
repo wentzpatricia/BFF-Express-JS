@@ -10,12 +10,11 @@ const putController = require("./controllers/put-controller");
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
+
 app.use("", getController);
-
 app.use("", postController);
-
 app.use("", putController);
-
 app.use("", deleteController);
 
 app.listen(port, () => {
