@@ -8,7 +8,7 @@ describe("postService", () => {
     jest.clearAllMocks();
   });
 
-  test("Deve retornar sucesso quando os dados são válidos", async () => {
+  it("Deve retornar sucesso quando os dados são válidos", async () => {
     const postData = { title: "foo", body: "bar", userId: 1 };
     const mockResult = { id: 1, ...postData };
 
@@ -20,7 +20,7 @@ describe("postService", () => {
     expect(useCase.postUseCase).toHaveBeenCalledWith(postData);
   });
 
-  test("Deve lançar erro 422 quando faltam campos obrigatórios", async () => {
+  it("Deve lançar erro 422 quando faltam campos obrigatórios", async () => {
     const invalidDataSets = [
       { title: "foo", body: "bar" },
       { body: "bar", userId: 1 },
@@ -37,7 +37,7 @@ describe("postService", () => {
     expect(useCase.postUseCase).not.toHaveBeenCalled();
   });
 
-  test("Deve lançar erro quando não for status 422", async () => {
+  it("Deve lançar erro quando não for status 422", async () => {
     const postData = { title: "foo", body: "bar", userId: 1 };
     const mockError = new Error("Erro ao realizar Post");
 

@@ -9,7 +9,9 @@ putController.put("/edit-post/:id", async (req, res) => {
     const data = await service.putService(postData, id);
     res.status(200).json({ message: "Post editado!", data });
   } catch (error) {
-    res.status(422).send("Erro ao editar post");
+    error.status
+      ? res.status(error.status).json({ message: error.message })
+      : res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
 

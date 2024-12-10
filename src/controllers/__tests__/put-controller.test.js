@@ -8,9 +8,13 @@ const putController = require("../put-controller");
 
 const app = express();
 app.use(express.json());
-app.use("/", putController);
+app.use(putController);
 
 describe("PUT /edit-post/:id", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const mockPostData = { title: "foo edit", body: "bar-edit", userId: 1 };
   const mockId = "2";
 
@@ -25,16 +29,37 @@ describe("PUT /edit-post/:id", () => {
       message: "Post editado!",
       data: mockPostData,
     });
+
+    expect(service.putService).toHaveBeenCalledTimes(1);
   });
 
-  it("deve retornar erro 422 se houver falha ao editar o post", async () => {
-    service.putService.mockRejectedValue(new Error("Erro ao editar post"));
+  it("deve retornar erro customizado do serviço", async () => {
+    const mockError = { status: 422, message: "Erro de validação" };
+
+    service.putService.mockRejectedValue(mockError);
 
     const response = await request(app)
       .put(`/edit-post/${mockId}`)
       .send({ title: "Post inválido" });
 
     expect(response.status).toBe(422);
-    expect(response.text).toBe("Erro ao editar post");
+    expect(response.body).toEqual({ message: "Erro de validação" });
+    expect(service.putService).toHaveBeenCalledTimes(1);
+  });
+
+  it("deve retornar erro 500 para erro inesperado", async () => {
+    const mockError = new Error("Erro desconhecido");
+
+    service.putService.mockRejectedValue(mockError);
+
+    const response = await request(app)
+      .put(`/edit-post/${mockId}`)
+      .send({ title: "Título", content: "Conteúdo" });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({
+      message: "Erro interno do servidor",
+    });
+    expect(service.putService).toHaveBeenCalledTimes(1);
   });
 });

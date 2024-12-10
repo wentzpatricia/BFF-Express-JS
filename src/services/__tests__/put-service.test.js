@@ -4,22 +4,58 @@ const { putService } = require("../put-service");
 jest.mock("../../use-cases/put-use-case");
 
 describe("putService", () => {
-  it("deve retornar os dados quando o useCase for bem-sucedido", async () => {
-    const mockData = { title: "foo edit", body: "bar edit", userId: 1 };
-    useCase.putUseCase.mockResolvedValue(mockData, 2);
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Deve retornar sucesso quando os dados são válidos", async () => {
+    const mockData = { title: "foo", body: "bar", userId: 1 };
+    const mockResult = { id: 2, ...mockData };
+
+    useCase.putUseCase.mockResolvedValue(mockResult);
 
     const result = await putService(mockData, 2);
 
-    expect(result).toEqual(mockData, 2);
-    expect(useCase.putUseCase).toHaveBeenCalled();
+    expect(result).toEqual(mockResult);
+    expect(useCase.putUseCase).toHaveBeenCalledWith(mockData, 2);
   });
 
-  it("deve lançar um erro quando o useCase falhar", async () => {
-    const mockData = { title: "foo", body: "bar", userId: 1 };
+  it("Deve lançar erro 422 quando faltam campos obrigatórios", async () => {
+    const invalidDataSets = [
+      { title: "foo", body: "bar" },
+      { body: "bar", userId: 1 },
+      { title: "foo", userId: 1 },
+    ];
 
-    useCase.putUseCase.mockRejectedValue(new Error("Erro no useCase"));
+    for (const data of invalidDataSets) {
+      await expect(putService(data, 2)).rejects.toEqual({
+        status: 422,
+        message: "Title, body e userId são obrigatórios",
+      });
+    }
 
-    await expect(putService(mockData, 2)).rejects.toThrow("Erro no useCase");
-    expect(useCase.putUseCase).toHaveBeenCalled();
+    expect(useCase.putUseCase).not.toHaveBeenCalled();
+  });
+
+  it("Deve lançar erro 422 quando faltar id", async () => {
+    const invalidData = { title: "foo", body: "bar", userId: 2 };
+
+    await expect(putService(invalidData, "")).rejects.toEqual({
+      status: 422,
+      message: "Id é obrigatório",
+    });
+
+    expect(useCase.putUseCase).not.toHaveBeenCalled();
+  });
+
+  it("Deve lançar erro quando não for status 422", async () => {
+    const postData = { title: "foo", body: "bar", userId: 1 };
+    const mockError = new Error("Erro ao realizar Put");
+
+    useCase.putUseCase.mockRejectedValue(mockError);
+
+    await expect(putService(postData, 2)).rejects.toThrow(
+      "Erro ao realizar Put"
+    );
   });
 });
