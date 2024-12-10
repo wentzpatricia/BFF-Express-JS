@@ -8,7 +8,9 @@ deleteController.delete("/delete-post/:id", async (req, res) => {
     await service.deleteService(id);
     res.status(200).json({ message: "Post excluído!" });
   } catch (error) {
-    res.status(422).send("Erro ao excluir post");
+    error.status
+      ? res.status(error.status).json({ message: error.message })
+      : res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
 
